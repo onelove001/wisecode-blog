@@ -12,6 +12,7 @@ from sqlalchemy import Integer, ForeignKey
 from flask_gravatar import Gravatar
 import datetime
 import os
+import re
 
 app = Flask(__name__)
 # app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
@@ -19,9 +20,11 @@ app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
 
 ckeditor = CKEditor(app)
 Bootstrap(app)
+uri = os.environ.get("DATABASE_URL")
+if uri and uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://")
+app.config['SQLALCHEMY_DATABASE_URI'] = uri
 
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -166,7 +169,8 @@ def show_post(post_id):
         db.session.add(new_comment)
         db.session.commit()
         return redirect(url_for('get_all_posts'))
-    return render_template("post.html", post=requested_post, form=form, is_admin=is_admin, post_comments=post_comments, year=year)
+    return render_template("post.html", post=requested_post, form=form, is_admin=is_admin, post_comments=post_comments,
+                           year=year)
 
 
 @app.route("/about")
