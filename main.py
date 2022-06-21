@@ -75,8 +75,8 @@ class Comment(db.Model):
     blog_post_article = relationship("BlogPost", back_populates="comments")
 
 
-# db.drop_all()
-# db.create_all()
+db.drop_all()
+db.create_all()
 
 
 def admin_required(f):
